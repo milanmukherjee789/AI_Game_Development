@@ -1,0 +1,46 @@
+from pyamaze import maze, COLOR, agent, textLabel
+
+
+def handle_agent_movement(direction,square):
+    next_move = {'E':(0,1),'W':(0,-1),'N':(-1,0),'S':(1,0)}
+    return (square[0]+next_move[direction][0],square[1]+next_move[direction][1])
+def backtrace(temp_goal,begin,journey):
+    final = {}
+    while begin != temp_goal:
+        final[journey[temp_goal]] = temp_goal
+        temp_goal = journey[temp_goal]
+    return final
+def Depth_First(agent,goal):
+    begin = (agent.rows,agent.cols)
+    queue = [begin]
+    visited = [begin]
+    journey = {}
+    count = 0
+    while len(queue)>0:
+        square = queue.pop() #last in first out or stack
+        count = count+1
+        if square == None:
+            break
+        try:
+            for direction in agent.maze_map[square]:
+                if agent.maze_map[square][direction] == 1:
+                    next_square = handle_agent_movement(direction,square)
+                    if next_square in visited:
+                        continue
+                    journey[next_square] = square
+                    visited.append(next_square)
+                    queue.append(next_square)
+                    if(next_square == goal):
+                        break
+        except:
+            print("error")   
+        if(next_square == goal):
+            break 
+    temp_goal = goal
+    final = backtrace(temp_goal,begin,journey)
+    print("count: " + str(count))
+    return final,count
+
+def find_path(my_maze,goal):
+    path,count=Depth_First(my_maze,goal)
+    return path,count
